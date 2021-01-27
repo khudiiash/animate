@@ -38,7 +38,9 @@ A GSAP addon for Sparkflow
     gsap.set('#logo_1, #copy_1, #cta_1, #legal_1, #headline_1', {scale: .8})
     gsap.set('#cta_1', {x: 15})
     gsap.set('#legal_1', {x: 35}) 
+
     // equals
+    
     Animate('P', 'set', {scale: .8, cta: {x: 15}, legal: {x: 35}})
 
 # Compatability issues solved
@@ -50,7 +52,9 @@ A GSAP addon for Sparkflow
     // 3D rotate with perspective (Safari friendly)
     gsap.set('#element', {perspective: 1000})
     gsap.to('#element img', {rotateY: 360}) 
+
     // equals
+
     Animate('#element', 'to', {rotateY: 360, perspective: 1000}) 
 
 # Short parameters
@@ -62,5 +66,7 @@ A GSAP addon for Sparkflow
         repeat: 1,
         ease: Power2.easeInOut
     })
+
     // equals
-    gsap.from('#element', 1.2, {clip: 'top', loop: 1, easeInOut: 2})
+
+    Animate('#element', 1.2, {clip: 'top', loop: 1, easeInOut: 2})
