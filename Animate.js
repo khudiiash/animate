@@ -280,7 +280,7 @@ function Animate(c) {
        }
        if (r === 'P') {
          	let elementsP = Array.prototype.slice.call(document.querySelectorAll('.portrait div'))
-       		return elementsL.filter(e =>
+       		return elementsP.filter(e =>
               !(($(e).width() >= 1040 && $(e).height() >= 1360) && !Object.keys(c).some(i => i && new RegExp('^'+i, 'i').test(e.id)))
             ).filter(e =>
               !(/hitarea|background/.test(e.getAttribute('data-type')) && !Object.keys(c).some(i => i && new RegExp('^'+i, 'i').test(e.id)))
