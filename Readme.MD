@@ -12,13 +12,13 @@ A GSAP addon for Sparkflow
         .from('#headline', { y: 15, opacity: 0})
         .from('#copy', { y: 15, opacity: 0}, "<.2")
         .from('#logo', {y: 15, opacity: 0}, "<.2")
-        .from('#copy1', {y: -15, opacity: 0}, "<.2")
+        .from('#copy1', {y: 15, opacity: 0}, "<.2")
         .from('#copy2', {scale: 0}, "<.2")
     gsap.timeline()
         .from('#headline_1', { y: 15, opacity: 0})
         .from('#copy_1', { y: 15, opacity: 0}, "<.2")
         .from('#logo_1', {y: 15, opacity: 0}, "<.2")
-        .from('#copy1_1', {y: -15, opacity: 0}, "<.2")
+        .from('#copy1_1', {y: 15, opacity: 0}, "<.2")
         .from('#copy2_1', {scale: 0}, "<.2")
 
     // equals
