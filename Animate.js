@@ -75,6 +75,8 @@ function Animate(c) {
     let timelineP = gsap.timeline(timeline)
     let elementsL = getAll(c, 'L')
     let elementsP = getAll(c, 'P')
+    
+    console.log(elementsL)
         
     let particulars = {}
     Object.keys(c).forEach(k => {
@@ -271,7 +273,10 @@ function Animate(c) {
               !(($(e).width() >= 1424 && $(e).height() >= 1000) && !Object.keys(c).some(i => i && new RegExp('^'+i, 'i').test(e.id)))
             ).filter(e =>
               !(/hitarea|background/.test(e.getAttribute('data-type')) && !Object.keys(c).some(i => i && new RegExp('^'+i, 'i').test(e.id)))
-            ).filter(e => e.id !== 'container')
+            ).filter(e => !(e.id === 'container' && !e.getAttribute('data-type')))
+            .filter(e => !$(e).parent().hasClass('vp-container'))
+            .filter(e => e.id)
+
        }
        if (r === 'P') {
          	let elementsP = Array.prototype.slice.call(document.querySelectorAll('.portrait div'))
@@ -279,7 +284,9 @@ function Animate(c) {
               !(($(e).width() >= 1040 && $(e).height() >= 1360) && !Object.keys(c).some(i => i && new RegExp('^'+i, 'i').test(e.id)))
             ).filter(e =>
               !(/hitarea|background/.test(e.getAttribute('data-type')) && !Object.keys(c).some(i => i && new RegExp('^'+i, 'i').test(e.id)))
-            ).filter(e => e.id !== 'container')
+            ).filter(e => !(e.id === 'container' && !e.getAttribute('data-type')))
+            .filter(e => !$(e).parent().hasClass('vp-container'))
+            .filter(e => e.id)
        }
     }
     if (!onlyL && !onlyP)
