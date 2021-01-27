@@ -274,7 +274,7 @@ function Animate(c) {
             ).filter(e =>
               !(/hitarea|background/.test(e.getAttribute('data-type')) && !Object.keys(c).some(i => i && new RegExp('^'+i, 'i').test(e.id)))
             ).filter(e => !(e.id === 'container' && !e.getAttribute('data-type')))
-            .filter(e => !$(e).parent().hasClass('vp-container'))
+            .filter(e => !$(e).parent().hasClass('vp-container') && !$(e).hasClass('vp-clickmask'))
             .filter(e => e.id)
 
        }
@@ -285,7 +285,7 @@ function Animate(c) {
             ).filter(e =>
               !(/hitarea|background/.test(e.getAttribute('data-type')) && !Object.keys(c).some(i => i && new RegExp('^'+i, 'i').test(e.id)))
             ).filter(e => !(e.id === 'container' && !e.getAttribute('data-type')))
-            .filter(e => !$(e).parent().hasClass('vp-container'))
+            .filter(e => !$(e).parent().hasClass('vp-container') && !$(e).hasClass('vp-clickmask'))
             .filter(e => e.id)
        }
     }
