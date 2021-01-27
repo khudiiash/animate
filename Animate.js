@@ -4,7 +4,7 @@ function Animate(c) {
     let onlyL = Array.from(arguments).some(a => /^(?:LS?|Landscape)$/i.test(a))
     let onlyP = Array.from(arguments).some(a => /^(?:P|Portrait)$/i.test(a))
     let paused = Array.from(arguments).some(a => /^paused?$/i.test(a))
-  
+
     if (arguments.length > 1 && !Array.from(arguments).some(a => Array.isArray(a))) {
         let args = Array.from(arguments)
         c = getObject(arguments)
@@ -13,13 +13,13 @@ function Animate(c) {
                 if (/\+|\-|\<|\>|\=/.test(a)) c.position = a
                 if (/[a-zA-Z]/.test(a)) c.target = a
             }
-          	if (typeof a === 'string' && /^(?:from|to)$/i.test(a)) {
+            if (typeof a === 'string' && /^(?:from|to)$/i.test(a)) {
                 c.type = a
             }
             if (typeof a === 'number') {
                 c.duration = a
             }
-          if (typeof a === 'string' && /^set$/i.test(a)) {
+            if (typeof a === 'string' && /^set$/i.test(a)) {
                 c.type = 'to'
                 c.duration = 0
             }
@@ -40,13 +40,13 @@ function Animate(c) {
             let { child, loop, easeInOut, easeIn, easeOut, ease, clip, perspective } = tween
             if (child) delete tween.child
             if (loop) { delete tween.loop; tween.yoyo = true, tween.repeat = loop }
-          	if (ease === 'none') tween.ease = Power0.easeNone
-          	if (ease) {if (ease === 'none') tween.ease = Power0.easeNone}
-            if (easeIn) {tween.ease = getEase(easeIn)}
-            if (easeOut) {tween.ease = getEase(easeOut)}
-            if (easeInOut) {tween.ease = getEase(easeInOut)}
-            if (perspective) {delete tween.perspective; gsap.set('section', {perspective})}
-            if (clip) {delete tween.clip; tween = {...tween,  ...generateClipPath(clip)}}
+            if (ease === 'none') tween.ease = Power0.easeNone
+            if (ease) { if (ease === 'none') tween.ease = Power0.easeNone }
+            if (easeIn) { tween.ease = getEase(easeIn) }
+            if (easeOut) { tween.ease = getEase(easeOut) }
+            if (easeInOut) { tween.ease = getEase(easeInOut) }
+            if (perspective) { delete tween.perspective; gsap.set('section', { perspective }) }
+            if (clip) { delete tween.clip; tween = { ...tween, ...generateClipPath(clip) } }
             return { target, tween, child, duration, position, type }
         })
     }
@@ -57,31 +57,31 @@ function Animate(c) {
     if (duration) delete c.duration
     if (position) delete c.position
     if (type) delete c.type
-    if (loop) {delete c.loop; c.yoyo = true; c.repeat = loop}
-  	if (ease) {if (ease === 'none') c.ease = Power0.easeNone}
-    if (easeIn) {delete c.easeIn; c.ease = getEase(easeIn)}
-    if (easeOut) {delete c.easeOut;c.ease = getEase(easeOut)}
-    if (easeInOut) {delete c.easeInOut;c.ease = getEase(easeInOut)}
-    if (clip) {delete c.clip; c = {...c,  ...generateClipPath(clip)}}
-    if (perspective) {delete c.perspective; gsap.set('section', {perspective})}
+    if (loop) { delete c.loop; c.yoyo = true; c.repeat = loop }
+    if (ease) { if (ease === 'none') c.ease = Power0.easeNone }
+    if (easeIn) { delete c.easeIn; c.ease = getEase(easeIn) }
+    if (easeOut) { delete c.easeOut; c.ease = getEase(easeOut) }
+    if (easeInOut) { delete c.easeInOut; c.ease = getEase(easeInOut) }
+    if (clip) { delete c.clip; c = { ...c, ...generateClipPath(clip) } }
+    if (perspective) { delete c.perspective; gsap.set('section', { perspective }) }
     if (timeline) delete c.timeline
 
-    
-  	if (paused && !timeline) timeline = {paused: true}
+
+    if (paused && !timeline) timeline = { paused: true }
     if (paused && timeline) timeline.paused = true;
-    if (timeline && timeline.loop) {timeline.repeat = loop; timeline.yoyo = true}
-  
+    if (timeline && timeline.loop) { timeline.repeat = loop; timeline.yoyo = true }
+
     let timelineL = gsap.timeline(timeline)
     let timelineP = gsap.timeline(timeline)
     let elementsL = getAll(c, 'L')
     let elementsP = getAll(c, 'P')
-    
+
     console.log(elementsL)
-        
+
     let particulars = {}
     Object.keys(c).forEach(k => {
-        elementsL.forEach(e => handleParticulars(e,k,c))
-        elementsP.forEach(e => handleParticulars(e,k,c))
+        elementsL.forEach(e => handleParticulars(e, k, c))
+        elementsP.forEach(e => handleParticulars(e, k, c))
     })
     Object.keys(c).forEach(k => {
         elementsL.forEach(e => {
@@ -96,15 +96,15 @@ function Animate(c) {
         })
     })
     if (!Object.keys(c).length) {
-    	elementsL = elementsL.filter(e => Object.keys(particulars).some(k => new RegExp(k).test(e.id)))
+        elementsL = elementsL.filter(e => Object.keys(particulars).some(k => new RegExp(k).test(e.id)))
         elementsP = elementsP.filter(e => Object.keys(particulars).some(k => new RegExp(k).test(e.id)))
         for (const [k, v] of Object.entries(particulars)) {
-        	particulars[k] = {...v, duration, position}
+            particulars[k] = { ...v, duration, position }
         }
     }
     if (include && include.length) {
-      	if (!Array.isArray(include) && typeof include === 'string') {
-          include = include.includes(',') ? include.split(',').map(i => i.trim()) : [include]
+        if (!Array.isArray(include) && typeof include === 'string') {
+            include = include.includes(',') ? include.split(',').map(i => i.trim()) : [include]
         }
         let re = new RegExp('^' + include.join('(?:_1|P|L|LS|Landscape|Portrait)?$|^'))
         elementsL = elementsL.filter(e => re.test(e.id))
@@ -112,7 +112,7 @@ function Animate(c) {
     }
     if (exclude && exclude.length) {
         if (!Array.isArray(exclude) && typeof exclude === 'string') {
-          exclude = exclude.includes(',') ? exclude.split(',').map(i => i.trim()) : [exclude]
+            exclude = exclude.includes(',') ? exclude.split(',').map(i => i.trim()) : [exclude]
         }
         let re = new RegExp('^' + exclude.join('(?:_1|P|L|LS|Landscape|Portrait)?$|^'))
         elementsL = elementsL.filter(e => !re.test(e.id))
@@ -149,11 +149,11 @@ function Animate(c) {
 
             if (elementsL[0] && !onlyP && !(set.tween.P && !set.tween.L)) {
                 let tween = set.tween.L ? set.tween.L : set.tween;
-                timelineL[set.type || 'from'](elementsL, { ...tween, duration: set.duration >=0 ? set.duration : 1 }, set.position)
+                timelineL[set.type || 'from'](elementsL, { ...tween, duration: set.duration >= 0 ? set.duration : 1 }, set.position)
             }
             if (elementsP[0] && !onlyL && !(set.tween.L && !set.tween.P)) {
                 let tween = set.tween.P ? set.tween.P : set.tween;
-                timelineP[set.type || 'from'](elementsP, { ...tween, duration: set.duration >=0 ? set.duration : 1 }, set.position)
+                timelineP[set.type || 'from'](elementsP, { ...tween, duration: set.duration >= 0 ? set.duration : 1 }, set.position)
             }
         })
     } else {
@@ -166,27 +166,27 @@ function Animate(c) {
         if (!onlyL && !(!c.P && c.L)) elementsP.map((e, i) => generateTweens(e, i, timelineP))
     }
 
-	function handleParticulars(e,k,c) {
-            if (new RegExp('^' + k).test(e.id)) {
-                let o = {...c}
-                let { order, loop, easeInOut, easeIn, easeOut, ease, clip, rotateY, rotateX, rotateZ, perspective, include, exclude, timeline } = c[k] || {}
-                if (!order && !include) order = 'z-index'
-                if (exclude && include) exclude = null
-                if (include) order = include
-                if (loop) {delete o.loop; o.yoyo = true; o.repeat = loop}
-                if (ease) {if (ease === 'none') o.ease = Power0.easeNone}
-                if (easeIn) {delete o.easeIn; o.ease = getEase(easeIn)}
-                if (easeOut) {delete o.easeOut;o.ease = getEase(easeOut)}
-                if (easeInOut) {delete o.easeInOut; o.ease = getEase(easeInOut)}
-                if (perspective) {delete o.perspective; gsap.set(e, {perspective}); o.child = true}
-                if ((rotateY || rotateX || rotateZ) && !perspective) {gsap.set(e, {z: 1000})}
-                if (clip) {delete o.clip; o = {...o,  ...generateClipPath(clip)}}
-                delete o[k]
-                particulars[e.id] = {...o, ...c[k]}
-            }
+    function handleParticulars(e, k, c) {
+        if (new RegExp('^' + k).test(e.id)) {
+            let o = { ...c }
+            let { order, loop, easeInOut, easeIn, easeOut, ease, clip, rotateY, rotateX, rotateZ, perspective, include, exclude, timeline } = c[k] || {}
+            if (!order && !include) order = 'z-index'
+            if (exclude && include) exclude = null
+            if (include) order = include
+            if (loop) { delete o.loop; o.yoyo = true; o.repeat = loop }
+            if (ease) { if (ease === 'none') o.ease = Power0.easeNone }
+            if (easeIn) { delete o.easeIn; o.ease = getEase(easeIn) }
+            if (easeOut) { delete o.easeOut; o.ease = getEase(easeOut) }
+            if (easeInOut) { delete o.easeInOut; o.ease = getEase(easeInOut) }
+            if (perspective) { delete o.perspective; gsap.set(e, { perspective }); o.child = true }
+            if ((rotateY || rotateX || rotateZ) && !perspective) { gsap.set(e, { z: 1000 }) }
+            if (clip) { delete o.clip; o = { ...o, ...generateClipPath(clip) } }
+            delete o[k]
+            particulars[e.id] = { ...o, ...c[k] }
+        }
     }
     function generateTweens(e, i, timeline) {
-      	if (!e) return
+        if (!e) return
         let prt = particulars[e.id]
         let g = prt ? {} : c
         let p = prt && 'position' in prt ? prt.position : position
@@ -222,43 +222,43 @@ function Animate(c) {
 
                 elementsL = getAll(c, 'L')
                 elementsP = getAll(c, 'P')
-                
+
                 if (target !== 'all') {
-                  target = target.split(',').map(i => i.trim())
-                  let eL = []
-                  let eP = []
-                  target.map(t => {
-                      let re = new RegExp(`^${t}(?:_1|P|L|LS|Landscape|Portrait)?$`)
-                      eL.push(elementsL.find(e => re.test(e.id)))
-                      eP.push(elementsP.find(e => re.test(e.id)))
-                  })
-                  elementsL = eL
-                  elementsP = eP
+                    target = target.split(',').map(i => i.trim())
+                    let eL = []
+                    let eP = []
+                    target.map(t => {
+                        let re = new RegExp(`^${t}(?:_1|P|L|LS|Landscape|Portrait)?$`)
+                        eL.push(elementsL.find(e => re.test(e.id)))
+                        eP.push(elementsP.find(e => re.test(e.id)))
+                    })
+                    elementsL = eL
+                    elementsP = eP
                 }
             }
             if (isObject(c) && 'target' in c) delete c.target
             return [elementsL, elementsP]
         }
     }
-  	function generateClipPath(path) {
-    	let top = /top/.test(path)
+    function generateClipPath(path) {
+        let top = /top/.test(path)
         let center = /center/.test(path)
         let bottom = /bottom/.test(path)
         let left = /left/.test(path)
         let right = /right/.test(path)
         if (center) {
-        return {webkitClipPath: `inset(50% 50% 50% 50%)`, clipPath: `inset(50% 50% 50% 50%)`}
+            return { webkitClipPath: `inset(50% 50% 50% 50%)`, clipPath: `inset(50% 50% 50% 50%)` }
         } else {
-        return {webkitClipPath: `inset(${bottom ? '100%' : '0'} ${left ? '100%' : '0'} ${top ? '100%' : '0'} ${right ? '100%' : '0'})`, clipPath: `inset(${bottom ? '100%' : '0'} ${left ? '100%' : '0'} ${top ? '100%' : '0'} ${right ? '100%' : '0'})`}
+            return { webkitClipPath: `inset(${bottom ? '100%' : '0'} ${left ? '100%' : '0'} ${top ? '100%' : '0'} ${right ? '100%' : '0'})`, clipPath: `inset(${bottom ? '100%' : '0'} ${left ? '100%' : '0'} ${top ? '100%' : '0'} ${right ? '100%' : '0'})` }
         }
 
     }
-  	function getEase(ease) {
-    	return ease === 1 ? Power1[ease] :
-                       ease === 2 ? Power2[ease] :
-                       ease === 3 ? Power3[ease] :
-                       ease === 4 ? Power4[ease] :
-        			   Power2[ease]
+    function getEase(ease) {
+        return ease === 1 ? Power1[ease] :
+            ease === 2 ? Power2[ease] :
+                ease === 3 ? Power3[ease] :
+                    ease === 4 ? Power4[ease] :
+                        Power2[ease]
     }
     function getObject(ar) {
         return Array.from(ar).find(a => !Array.isArray(a) && typeof a !== 'string' && typeof a !== 'number')
@@ -266,28 +266,28 @@ function Animate(c) {
     function isObject(a) {
         return !Array.isArray(a) && typeof a !== 'string' && typeof a !== 'number' && typeof a !== 'number'
     }
-  	function getAll(c, r) {
-       if (r === 'L') {
+    function getAll(c, r) {
+        if (r === 'L') {
             let elementsL = Array.prototype.slice.call(document.querySelectorAll('.landscape div'))
-        	return elementsL.filter(e =>
-              !(($(e).width() >= 1424 && $(e).height() >= 1000) && !Object.keys(c).some(i => i && new RegExp('^'+i, 'i').test(e.id)))
+            return elementsL.filter(e =>
+                !(($(e).width() >= 1424 && $(e).height() >= 1000) && !Object.keys(c).some(i => i && new RegExp('^' + i, 'i').test(e.id)))
             ).filter(e =>
-              !(/hitarea|background/.test(e.getAttribute('data-type')) && !Object.keys(c).some(i => i && new RegExp('^'+i, 'i').test(e.id)))
+                !(/hitarea|background/.test(e.getAttribute('data-type')) && !Object.keys(c).some(i => i && new RegExp('^' + i, 'i').test(e.id)))
             ).filter(e => !(e.id === 'container' && !e.getAttribute('data-type')))
-            .filter(e => !$(e).parent().hasClass('vp-container') && !$(e).hasClass('vp-clickmask'))
-            .filter(e => e.id)
+                .filter(e => !$(e).parent().hasClass('vp-container') && !$(e).hasClass('vp-clickmask'))
+                .filter(e => e.id)
 
-       }
-       if (r === 'P') {
-         	let elementsP = Array.prototype.slice.call(document.querySelectorAll('.portrait div'))
-       		return elementsP.filter(e =>
-              !(($(e).width() >= 1040 && $(e).height() >= 1360) && !Object.keys(c).some(i => i && new RegExp('^'+i, 'i').test(e.id)))
+        }
+        if (r === 'P') {
+            let elementsP = Array.prototype.slice.call(document.querySelectorAll('.portrait div'))
+            return elementsP.filter(e =>
+                !(($(e).width() >= 1040 && $(e).height() >= 1360) && !Object.keys(c).some(i => i && new RegExp('^' + i, 'i').test(e.id)))
             ).filter(e =>
-              !(/hitarea|background/.test(e.getAttribute('data-type')) && !Object.keys(c).some(i => i && new RegExp('^'+i, 'i').test(e.id)))
+                !(/hitarea|background/.test(e.getAttribute('data-type')) && !Object.keys(c).some(i => i && new RegExp('^' + i, 'i').test(e.id)))
             ).filter(e => !(e.id === 'container' && !e.getAttribute('data-type')))
-            .filter(e => !$(e).parent().hasClass('vp-container') && !$(e).hasClass('vp-clickmask'))
-            .filter(e => e.id)
-       }
+                .filter(e => !$(e).parent().hasClass('vp-container') && !$(e).hasClass('vp-clickmask'))
+                .filter(e => e.id)
+        }
     }
     if (!onlyL && !onlyP)
         return [timelineL, timelineP]
@@ -296,3 +296,12 @@ function Animate(c) {
     if (onlyP)
         return timelineP
 }
+
+
+
+
+gsap.set('#logo_1, #copy_1, #cta_1, #legal_1, #headline_1', {scale: .8})
+gsap.set('#cta_1', {x: 15})
+gsap.set('#legal_1', {x: 35}) 
+// equals
+Animate('P', 'set', {scale: .8, cta: {x: 15}, legal: {x: 35}})
