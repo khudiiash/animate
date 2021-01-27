@@ -7,6 +7,25 @@ A GSAP addon for Sparkflow
 
 # [CDN](https://cdn.jsdelivr.net/gh/khudiiash/animate/Animate.js) | [Documentation](https://docs.google.com/document/d/1dgcEFdc2rYj9XGm4GVx2okL93PnzunKSXikvOr7ADTg/edit?usp=sharing)
 
+# All at once
+    gsap.timeline()
+        .from('#headline', { y: 15, opacity: 0})
+        .from('#copy', { y: 15, opacity: 0}, "<.2")
+        .from('#logo', {y: 15, opacity: 0}, "<.2")
+        .from('#copy1', {y: -15, opacity: 0}, "<.2")
+        .from('#copy2', {scale: 0}, "<.2")
+    gsap.timeline()
+        .from('#headline_1', { y: 15, opacity: 0})
+        .from('#copy_1', { y: 15, opacity: 0}, "<.2")
+        .from('#logo_1', {y: 15, opacity: 0}, "<.2")
+        .from('#copy1_1', {y: -15, opacity: 0}, "<.2")
+        .from('#copy2_1', {scale: 0}, "<.2")
+
+    // equals
+
+    Animate({y: 15, opacity: 0, copy2: {scale: 0}})
+
+
 # Less code - better code
     gsap.timeline()
         .from('#headline', { webkitClipPath: 'inset(0 0 100% 0)', clipPath: 'inset(0 0 100% 0)', opacity: 0, repeat: 1, yoyo: true})
