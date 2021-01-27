@@ -40,16 +40,21 @@ A GSAP addon for Sparkflow
     gsap.set('#legal_1', {x: 35}) 
 
     // equals
-    
+
     Animate('P', 'set', {scale: .8, cta: {x: 15}, legal: {x: 35}})
 
 # Compatability issues solved
     // 3D rotate with no perspective (Safari friendly)
+    
     gsap.set('#element', {z: 200})
     gsap.to('#element', {rotateY: 360}) 
+    
     // equals
+    
     Animate('#element', 'to', {rotateY: 360}) 
+    
     // 3D rotate with perspective (Safari friendly)
+    
     gsap.set('#element', {perspective: 1000})
     gsap.to('#element img', {rotateY: 360}) 
 
