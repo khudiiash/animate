@@ -11,7 +11,7 @@ function Animate(c) {
         args.map(a => {
             if (typeof a === 'string' && !/^(?:l|p|paused|from|to|set)$/i.test(a)) {
                 if (/\+|\-|\<|\>|\=/.test(a)) c.position = a
-                if (/[a-z]/.test(a)) c.target = a
+                if (/[a-zA-Z]/.test(a)) c.target = a
             }
           	if (typeof a === 'string' && /^(?:from|to)$/i.test(a)) {
                 c.type = a
@@ -73,10 +73,9 @@ function Animate(c) {
   
     let timelineL = gsap.timeline(timeline)
     let timelineP = gsap.timeline(timeline)
-
     let elementsL = getAll(c, 'L')
     let elementsP = getAll(c, 'P')
-    
+        
     let particulars = {}
     Object.keys(c).forEach(k => {
         elementsL.forEach(e => handleParticulars(e,k,c))
@@ -267,14 +266,21 @@ function Animate(c) {
     }
   	function getAll(c, r) {
        if (r === 'L') {
-            let elementsL = Array.prototype.slice.call(document.querySelectorAll('.landscape div[data-format],.landscape div[data-type="text"],.landscape div[data-type="video2"]'))
-        	return elementsL.filter(e => !($(e).width() === 1424 && $(e).height() === 1000 && !Object.keys(c).some(i => new RegExp('^'+i, 'i').test(e.id))))
+            let elementsL = Array.prototype.slice.call(document.querySelectorAll('.landscape div'))
+        	return elementsL.filter(e =>
+              !(($(e).width() >= 1424 && $(e).height() >= 1000) && !Object.keys(c).some(i => i && new RegExp('^'+i, 'i').test(e.id)))
+            ).filter(e =>
+              !(/hitarea|background/.test(e.getAttribute('data-type')) && !Object.keys(c).some(i => i && new RegExp('^'+i, 'i').test(e.id)))
+            ).filter(e => e.id !== 'container')
        }
        if (r === 'P') {
-         	let elementsP = Array.prototype.slice.call(document.querySelectorAll('.portrait div[data-format],.portrait div[data-type="text"],.portrait div[data-type="video2"]'))
-       		return elementsP.filter(e => !($(e).width() === 1040 && $(e).height() === 1360 && !Object.keys(c).some(i => new RegExp('^'+i, 'i').test(e.id))))
+         	let elementsP = Array.prototype.slice.call(document.querySelectorAll('.portrait div'))
+       		return elementsL.filter(e =>
+              !(($(e).width() >= 1040 && $(e).height() >= 1360) && !Object.keys(c).some(i => i && new RegExp('^'+i, 'i').test(e.id)))
+            ).filter(e =>
+              !(/hitarea|background/.test(e.getAttribute('data-type')) && !Object.keys(c).some(i => i && new RegExp('^'+i, 'i').test(e.id)))
+            ).filter(e => e.id !== 'container')
        }
-        return [elementsL, elementsP]
     }
     if (!onlyL && !onlyP)
         return [timelineL, timelineP]
