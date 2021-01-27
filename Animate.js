@@ -296,12 +296,3 @@ function Animate(c) {
     if (onlyP)
         return timelineP
 }
-
-
-
-
-gsap.set('#logo_1, #copy_1, #cta_1, #legal_1, #headline_1', {scale: .8})
-gsap.set('#cta_1', {x: 15})
-gsap.set('#legal_1', {x: 35}) 
-// equals
-Animate('P', 'set', {scale: .8, cta: {x: 15}, legal: {x: 35}})
