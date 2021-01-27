@@ -23,7 +23,7 @@ A GSAP addon for Sparkflow
 
     // equals
 
-    Animate({y: 15, opacity: 0, copy2: {scale: 0}})
+    Animate({y: 15, opacity: 0, copy2: {scale: 0}}, '<.2')
 
 
 # Less code - better code
