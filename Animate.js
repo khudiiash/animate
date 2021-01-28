@@ -195,7 +195,6 @@ function Animate(c) {
         if (rotateY || rotateZ || rotateX) g.z = $(e).width() * 2 * i
         let ovf = prt && 'child' in prt ? prt.child : child
         if (prt) delete prt.child
-        console.log({...g, ...prt})
         if (ovf) {
             if (!c.perspective && !(prt && prt.perspective)) gsap.set(e, { overflow: 'hidden' })
             let child = document.querySelector(`#${e.id} img, #${e.id} span`)
@@ -286,7 +285,6 @@ function Animate(c) {
       	if (isObject(c)){
           	r = Object.keys(c).some(i => i && new RegExp('^' + i).test(e.id))
         }
-      	console.log(e.id, r)
         return r
     }
     function getAll(r) {
