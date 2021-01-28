@@ -1,4 +1,5 @@
 function Animate(c) {
+    // version 1.0.5
     if (!gsap) return
     let sets;
     let onlyL = Array.from(arguments).some(a => /^(?:LS?|Landscape)$/i.test(a))
