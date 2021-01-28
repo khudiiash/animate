@@ -71,6 +71,7 @@ function Animate(c) {
     let timelineP = gsap.timeline(timeline)
     let elementsL = getAll(c, 'L')
     let elementsP = getAll(c, 'P')
+    
     let particulars = {}
     Object.keys(c).forEach(k => {
         elementsL.forEach(e => handleParticulars(e, k, c))
@@ -220,6 +221,7 @@ function Animate(c) {
                     target = target.split(',').map(i => i.trim())
                     let eL = []
                     let eP = []
+                    
                     target.map(t => {
                         let re = new RegExp(`^${t}(?:_1|P|L|LS|Landscape|Portrait)?$`)
                         eL.push(elementsL.find(e => re.test(e.id)))
@@ -244,7 +246,6 @@ function Animate(c) {
         } else {
             return { webkitClipPath: `inset(${bottom ? '100%' : '0'} ${left ? '100%' : '0'} ${top ? '100%' : '0'} ${right ? '100%' : '0'})`, clipPath: `inset(${bottom ? '100%' : '0'} ${left ? '100%' : '0'} ${top ? '100%' : '0'} ${right ? '100%' : '0'})` }
         }
-
     }
     function getEase(ease) {
         return ease === 1 ? Power1[ease] :
@@ -259,13 +260,16 @@ function Animate(c) {
     function isObject(a) {
         return !Array.isArray(a) && typeof a !== 'string' && typeof a !== 'number' && typeof a !== 'number'
     }
+  	function isRequested(e) {
+    	return Object.keys(c).some(i => i && new RegExp('^' + i, 'i').test(e.id)) || (sets && sets.some(s => new RegExp('^' + s.target, 'i').test(e.id))) 
+    }
     function getAll(c, r) {
         if (r === 'L') {
             let elementsL = Array.prototype.slice.call(document.querySelectorAll('.landscape div'))
             return elementsL.filter(e =>
-                !(($(e).width() >= 1424 && $(e).height() >= 1000) && !Object.keys(c).some(i => i && new RegExp('^' + i, 'i').test(e.id)))
+                !(($(e).width() >= 1424 && $(e).height() >= 1000) && !isRequested(e))
             ).filter(e =>
-                !(/hitarea|background/.test(e.getAttribute('data-type')) && !Object.keys(c).some(i => i && new RegExp('^' + i, 'i').test(e.id)))
+                !(/hitarea|background/.test(e.getAttribute('data-type')) && !isRequested(e))
             ).filter(e => !(e.id === 'container' && !e.getAttribute('data-type')))
                 .filter(e => !$(e).parent().hasClass('vp-container') && !$(e).hasClass('vp-clickmask'))
                 .filter(e => e.id)
@@ -274,9 +278,9 @@ function Animate(c) {
         if (r === 'P') {
             let elementsP = Array.prototype.slice.call(document.querySelectorAll('.portrait div'))
             return elementsP.filter(e =>
-                !(($(e).width() >= 1040 && $(e).height() >= 1360) && !Object.keys(c).some(i => i && new RegExp('^' + i, 'i').test(e.id)))
+                !(($(e).width() >= 1040 && $(e).height() >= 1360) && !!isRequested(e))
             ).filter(e =>
-                !(/hitarea|background/.test(e.getAttribute('data-type')) && !Object.keys(c).some(i => i && new RegExp('^' + i, 'i').test(e.id)))
+                !(/hitarea|background/.test(e.getAttribute('data-type')) && !isRequested(e))
             ).filter(e => !(e.id === 'container' && !e.getAttribute('data-type')))
                 .filter(e => !$(e).parent().hasClass('vp-container') && !$(e).hasClass('vp-clickmask'))
                 .filter(e => e.id)
