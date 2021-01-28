@@ -4,6 +4,7 @@ function Animate(c) {
     let onlyL = Array.from(arguments).some(a => /^(?:LS?|Landscape)$/i.test(a))
     let onlyP = Array.from(arguments).some(a => /^(?:P|Portrait)$/i.test(a))
     let paused = Array.from(arguments).some(a => /^paused?$/i.test(a))
+    
     if (arguments.length > 1 && !Array.from(arguments).some(a => Array.isArray(a))) {
         let args = Array.from(arguments)
         c = getObject(arguments)
@@ -36,7 +37,7 @@ function Animate(c) {
             let position = arr.find(a => /\+|\-|\<|\>|\=/.test(a)) || pos
             let target = arr.find(a => typeof a === 'string' && !/^(?:from|to|set)$/i.test(a) && /[a-zA-Z]/.test(a)) || 'all'
             let type = arr.includes('set') || arr.includes('to') ? 'to' : 'from'
-            let { child, loop, easeInOut, easeIn, easeOut, ease, clip, perspective } = tween
+            let { child, loop, easeInOut, easeIn, easeOut, ease, clip, shadow, perspective } = tween
             if (child) delete tween.child
             if (loop) { delete tween.loop; tween.yoyo = true, tween.repeat = loop }
             if (ease === 'none') tween.ease = Power0.easeNone
@@ -45,11 +46,12 @@ function Animate(c) {
             if (easeOut) { tween.ease = getEase(easeOut) }
             if (easeInOut) { tween.ease = getEase(easeInOut) }
             if (perspective) { delete tween.perspective; gsap.set('section', { perspective }) }
+            if (shadow) {tween = generateShadow(shadow, tween)}
             if (clip) { delete tween.clip; tween = { ...tween, ...generateClipPath(clip) } }
             return { target, tween, child, duration, position, type }
         })
     }
-    let { duration, position, order, child, loop, easeInOut, easeIn, easeOut, rotateY, rotateX, rotateZ, perspective, ease, clip, include, exclude, timeline, type } = c || {}
+    let { duration, position, order, child, loop, easeInOut, easeIn, easeOut, rotateY, rotateX, rotateZ, perspective, ease, clip, shadow, include, exclude, timeline, type } = c || {}
     if (!order && !include) order = 'z-index'
     if (exclude && include) exclude = null
     if (include) order = include
@@ -63,14 +65,16 @@ function Animate(c) {
     if (easeInOut) { delete c.easeInOut; c.ease = getEase(easeInOut) }
     if (clip) { delete c.clip; c = { ...c, ...generateClipPath(clip) } }
     if (perspective) { delete c.perspective; gsap.set('section', { perspective }) }
+  	if (shadow) {c = generateShadow(shadow, c)}
     if (timeline) delete c.timeline
     if (paused && !timeline) timeline = { paused: true }
     if (paused && timeline) timeline.paused = true;
     if (timeline && timeline.loop) { timeline.repeat = loop; timeline.yoyo = true }
     let timelineL = gsap.timeline(timeline)
     let timelineP = gsap.timeline(timeline)
-    let elementsL = getAll(c, 'L')
-    let elementsP = getAll(c, 'P')
+    let elementsL = getAll('L')
+    let elementsP = getAll('P')
+  
     
     let particulars = {}
     Object.keys(c).forEach(k => {
@@ -163,7 +167,7 @@ function Animate(c) {
     function handleParticulars(e, k, c) {
         if (new RegExp('^' + k).test(e.id)) {
             let o = { ...c }
-            let { order, loop, easeInOut, easeIn, easeOut, ease, clip, rotateY, rotateX, rotateZ, perspective, include, exclude, timeline } = c[k] || {}
+            let { order, loop, easeInOut, easeIn, easeOut, ease, clip, shadow, rotateY, rotateX, rotateZ, perspective, include, exclude, timeline } = c[k] || {}
             if (!order && !include) order = 'z-index'
             if (exclude && include) exclude = null
             if (include) order = include
@@ -174,6 +178,7 @@ function Animate(c) {
             if (easeInOut) { delete o.easeInOut; o.ease = getEase(easeInOut) }
             if (perspective) { delete o.perspective; gsap.set(e, { perspective }); o.child = true }
             if ((rotateY || rotateX || rotateZ) && !perspective) { gsap.set(e, { z: 1000 }) }
+            if (shadow) {o = generateShadow(shadow, o)}
             if (clip) { delete o.clip; o = { ...o, ...generateClipPath(clip) } }
             delete o[k]
             particulars[e.id] = { ...o, ...c[k] }
@@ -189,6 +194,7 @@ function Animate(c) {
         if (rotateY || rotateZ || rotateX) g.z = $(e).width() * 2 * i
         let ovf = prt && 'child' in prt ? prt.child : child
         if (prt) delete prt.child
+        console.log({...g, ...prt})
         if (ovf) {
             if (!c.perspective && !(prt && prt.perspective)) gsap.set(e, { overflow: 'hidden' })
             let child = document.querySelector(`#${e.id} img, #${e.id} span`)
@@ -247,44 +253,52 @@ function Animate(c) {
             return { webkitClipPath: `inset(${bottom ? '100%' : '0'} ${left ? '100%' : '0'} ${top ? '100%' : '0'} ${right ? '100%' : '0'})`, clipPath: `inset(${bottom ? '100%' : '0'} ${left ? '100%' : '0'} ${top ? '100%' : '0'} ${right ? '100%' : '0'})` }
         }
     }
+    function generateShadow(shadow, tween) {
+       if (shadow && tween && isObject(tween)) {
+                let result;
+              	if (Array.isArray(shadow)) result = `drop-shadow(0 0 ${shadow.find(s => s > 1)}px rgba(0,0,0,${shadow.find(s => s <= 1 && s > 0)}))`
+                if (typeof shadow === 'number') result = `drop-shadow(0 0 8px rgba(0,0,0,${shadow}))`
+                tween.webkitFilter = result
+                tween.filter = result
+                delete tween.shadow;
+                return tween
+            }
+    }
     function getEase(ease) {
         return ease === 1 ? Power1[ease] :
-            ease === 2 ? Power2[ease] :
-                ease === 3 ? Power3[ease] :
-                    ease === 4 ? Power4[ease] :
-                        Power2[ease]
+               ease === 2 ? Power2[ease] :
+               ease === 3 ? Power3[ease] :
+               ease === 4 ? Power4[ease] :
+                            Power2[ease]
     }
     function getObject(ar) {
-        return Array.from(ar).find(a => !Array.isArray(a) && typeof a !== 'string' && typeof a !== 'number')
+        return Array.from(ar).find(a => isObject(a))
     }
     function isObject(a) {
-        return !Array.isArray(a) && typeof a !== 'string' && typeof a !== 'number' && typeof a !== 'number'
+        return !Array.isArray(a) && typeof a !== 'string' && typeof a !== 'number'
     }
   	function isRequested(e) {
-    	return Object.keys(c).some(i => i && new RegExp('^' + i, 'i').test(e.id)) || (sets && sets.some(s => new RegExp('^' + s.target, 'i').test(e.id))) 
+      	let r = false;
+      	if (sets && Array.isArray(sets)) {
+        	r = sets.some(s => new RegExp('^' + s.target).test(e.id))
+        } 
+      	if (isObject(c)){
+          	r = Object.keys(c).some(i => i && new RegExp('^' + i).test(e.id))
+        }
+      	console.log(e.id, r)
+        return r
     }
-    function getAll(c, r) {
-        if (r === 'L') {
-            let elementsL = Array.prototype.slice.call(document.querySelectorAll('.landscape div'))
-            return elementsL.filter(e =>
-                !(($(e).width() >= 1424 && $(e).height() >= 1000) && !isRequested(e))
-            ).filter(e =>
-                !(/hitarea|background/.test(e.getAttribute('data-type')) && !isRequested(e))
-            ).filter(e => !(e.id === 'container' && !e.getAttribute('data-type')))
-                .filter(e => !$(e).parent().hasClass('vp-container') && !$(e).hasClass('vp-clickmask'))
-                .filter(e => e.id)
-
-        }
-        if (r === 'P') {
-            let elementsP = Array.prototype.slice.call(document.querySelectorAll('.portrait div'))
-            return elementsP.filter(e =>
-                !(($(e).width() >= 1040 && $(e).height() >= 1360) && !!isRequested(e))
-            ).filter(e =>
-                !(/hitarea|background/.test(e.getAttribute('data-type')) && !isRequested(e))
-            ).filter(e => !(e.id === 'container' && !e.getAttribute('data-type')))
-                .filter(e => !$(e).parent().hasClass('vp-container') && !$(e).hasClass('vp-clickmask'))
-                .filter(e => e.id)
-        }
+    function getAll(r) {
+        let elements = Array.prototype.slice.call(document.querySelectorAll(r === 'L' ? '.landscape div' : '.portrait div'))
+        return elements.filter(e =>
+            !(($(e).width() >= (r === 'L' ? 1424 : 1040) && $(e).height() >= (r === 'L' ? 1000 : 1360)) && !isRequested(e))
+        ).filter(e =>
+            !(/hitarea/.test(e.getAttribute('data-type')) && !isRequested(e))
+        ).filter(e =>
+            !(/background/.test(e.getAttribute('data-type')))
+        ).filter(e => !(e.id === 'container' && !e.getAttribute('data-type')))
+            .filter(e => !$(e).parent().hasClass('vp-container') && !$(e).hasClass('vp-clickmask'))
+            .filter(e => e.id)
     }
     if (!onlyL && !onlyP)
         return [timelineL, timelineP]
