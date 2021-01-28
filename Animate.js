@@ -33,7 +33,7 @@ function Animate(c) {
         sets = tweens.map(arr => {
             let tween = arr.find(a => a instanceof Object)
             if (common) tween = { ...tween, ...common }
-            let duration = arr.includes('set') ? 0 : arr.arr.find(a => typeof a === 'number') || dur
+            let duration = arr.includes('set') ? 0 : arr.find(a => typeof a === 'number') || dur
             let position = arr.find(a => /\+|\-|\<|\>|\=/.test(a)) || pos
             let target = arr.find(a => typeof a === 'string' && !/^(?:from|to|set)$/i.test(a) && /[a-z]/.test(a)) || 'all'
             let type = arr.includes('set') || arr.includes('to') ? 'to' : 'from'
