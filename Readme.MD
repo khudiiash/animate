@@ -26,6 +26,7 @@ A GSAP addon for Sparkflow
     Animate({y: 15, opacity: 0, copy2: {scale: 0}}, '<.2')
 
 # Less code - better code
+
     gsap.timeline()
         .from('#headline', { webkitClipPath: 'inset(0 0 100% 0)', clipPath: 'inset(0 0 100% 0)', opacity: 0, repeat: 1, yoyo: true})
         .from('#subheader', { webkitClipPath: 'inset(0 0 100% 0)', clipPath: 'inset(0 0 100% 0)', opacity: 0, repeat: 1, yoyo: true}, '<.2')

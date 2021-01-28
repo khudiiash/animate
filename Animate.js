@@ -4,7 +4,6 @@ function Animate(c) {
     let onlyL = Array.from(arguments).some(a => /^(?:LS?|Landscape)$/i.test(a))
     let onlyP = Array.from(arguments).some(a => /^(?:P|Portrait)$/i.test(a))
     let paused = Array.from(arguments).some(a => /^paused?$/i.test(a))
-
     if (arguments.length > 1 && !Array.from(arguments).some(a => Array.isArray(a))) {
         let args = Array.from(arguments)
         c = getObject(arguments)
