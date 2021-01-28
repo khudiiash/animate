@@ -65,19 +65,13 @@ function Animate(c) {
     if (clip) { delete c.clip; c = { ...c, ...generateClipPath(clip) } }
     if (perspective) { delete c.perspective; gsap.set('section', { perspective }) }
     if (timeline) delete c.timeline
-
-
     if (paused && !timeline) timeline = { paused: true }
     if (paused && timeline) timeline.paused = true;
     if (timeline && timeline.loop) { timeline.repeat = loop; timeline.yoyo = true }
-
     let timelineL = gsap.timeline(timeline)
     let timelineP = gsap.timeline(timeline)
     let elementsL = getAll(c, 'L')
     let elementsP = getAll(c, 'P')
-
-    console.log(elementsL)
-
     let particulars = {}
     Object.keys(c).forEach(k => {
         elementsL.forEach(e => handleParticulars(e, k, c))
