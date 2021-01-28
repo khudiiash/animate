@@ -1,5 +1,5 @@
 function Animate(c) {
-    // version 1.0.5
+    // version 1.0.7
     if (!gsap) return
     let sets;
     let onlyL = Array.from(arguments).some(a => /^(?:LS?|Landscape)$/i.test(a))
@@ -219,15 +219,12 @@ function Animate(c) {
                     }
                 })
             } else {
-
-                elementsL = getAll(c, 'L')
-                elementsP = getAll(c, 'P')
-
+                elementsL = getAll('L')
+                elementsP = getAll('P')
                 if (target !== 'all') {
                     target = target.split(',').map(i => i.trim())
                     let eL = []
                     let eP = []
-                    
                     target.map(t => {
                         let re = new RegExp(`^${t}(?:_1|P|L|LS|Landscape|Portrait)?$`)
                         eL.push(elementsL.find(e => re.test(e.id)))

@@ -5,7 +5,7 @@ A GSAP addon for Sparkflow
   - Compatability improved
   - More flexibility
 
-# [CDN](https://cdn.jsdelivr.net/gh/khudiiash/animate@1.0.6/Animate.js) | [Documentation](https://docs.google.com/document/d/1dgcEFdc2rYj9XGm4GVx2okL93PnzunKSXikvOr7ADTg/edit?usp=sharing)
+# [CDN](https://cdn.jsdelivr.net/gh/khudiiash/animate@1.0.7/Animate.js) | [Documentation](https://docs.google.com/document/d/1dgcEFdc2rYj9XGm4GVx2okL93PnzunKSXikvOr7ADTg/edit?usp=sharing)
 
 # All at once
     gsap.timeline()
@@ -86,6 +86,8 @@ A GSAP addon for Sparkflow
     gsap.from('#element', 1.2, {
         webkitClipPath: 'inset(0 0 100% 0)',
         clipPath:  'inset(0 0 100% 0)',
+        webkitFilter: 'drop-shadow(0 0 8px rgba(0,0,0,.1)),
+        filter: 'drop-shadow(0 0 8px rgba(0,0,0,.1))',
         yoyo: true,
         repeat: 1,
         ease: Power2.easeInOut
@@ -93,4 +95,4 @@ A GSAP addon for Sparkflow
 
     // equals
 
-    Animate('#element', 1.2, {clip: 'top', loop: 1, easeInOut: 2})
+    Animate('#element', 1.2, {clip: 'top', shadow: .1, loop: 1, easeInOut: 2})
