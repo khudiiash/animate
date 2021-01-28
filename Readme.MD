@@ -5,7 +5,7 @@ A GSAP addon for Sparkflow
   - Compatability improved
   - More flexibility
 
-# [CDN](https://cdn.jsdelivr.net/gh/khudiiash/animate@1.0/Animate.js) | [Documentation](https://docs.google.com/document/d/1dgcEFdc2rYj9XGm4GVx2okL93PnzunKSXikvOr7ADTg/edit?usp=sharing)
+# [CDN](https://cdn.jsdelivr.net/gh/khudiiash/animate@1.0.0/Animate.js) | [Documentation](https://docs.google.com/document/d/1dgcEFdc2rYj9XGm4GVx2okL93PnzunKSXikvOr7ADTg/edit?usp=sharing)
 
 # All at once
     gsap.timeline()

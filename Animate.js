@@ -34,7 +34,7 @@ function Animate(c) {
             if (common) tween = { ...tween, ...common }
             let duration = arr.includes('set') ? 0 : arr.find(a => typeof a === 'number') || dur
             let position = arr.find(a => /\+|\-|\<|\>|\=/.test(a)) || pos
-            let target = arr.find(a => typeof a === 'string' && !/^(?:from|to|set)$/i.test(a) && /[a-z]/.test(a)) || 'all'
+            let target = arr.find(a => typeof a === 'string' && !/^(?:from|to|set)$/i.test(a) && /[a-zA-Z]/.test(a)) || 'all'
             let type = arr.includes('set') || arr.includes('to') ? 'to' : 'from'
             let { child, loop, easeInOut, easeIn, easeOut, ease, clip, perspective } = tween
             if (child) delete tween.child
