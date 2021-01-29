@@ -1,5 +1,5 @@
 function Animate(c) {
-    // version 1.0.7
+    // version 1.0.8
     if (!gsap) return
     let sets;
     let onlyL = Array.from(arguments).some(a => /^(?:LS?|Landscape)$/i.test(a))
@@ -75,7 +75,7 @@ function Animate(c) {
     let timelineP = gsap.timeline(timeline)
     let elementsL = getAll('L')
     let elementsP = getAll('P')
-  
+      
     
     let particulars = {}
     Object.keys(c).forEach(k => {
@@ -234,6 +234,7 @@ function Animate(c) {
                     elementsP = eP
                 }
             }
+            console.log(target, elementsL)
             if (isObject(c) && 'target' in c) delete c.target
             return [elementsL, elementsP]
         }
@@ -279,8 +280,11 @@ function Animate(c) {
       	if (sets && Array.isArray(sets)) {
         	r = sets.some(s => new RegExp('^' + s.target).test(e.id))
         } 
-      	if (isObject(c)){
+      	if (c && isObject(c)){
           	r = Object.keys(c).some(i => i && new RegExp('^' + i).test(e.id))
+        }
+      	if (c && c.target) {
+        	r = new RegExp(e.id.replace(/(?:_1|P|L|LS|Landscape|Portrait)$/, '')).test(c.target)
         }
         return r
     }
