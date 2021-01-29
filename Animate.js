@@ -1,5 +1,5 @@
 function Animate(c) {
-    // version 1.0.8
+    // version 1.0.9
     if (!gsap) return
     let sets;
     let onlyL = Array.from(arguments).some(a => /^(?:LS?|Landscape)$/i.test(a))
@@ -75,8 +75,6 @@ function Animate(c) {
     let timelineP = gsap.timeline(timeline)
     let elementsL = getAll('L')
     let elementsP = getAll('P')
-      
-    
     let particulars = {}
     Object.keys(c).forEach(k => {
         elementsL.forEach(e => handleParticulars(e, k, c))
@@ -234,7 +232,6 @@ function Animate(c) {
                     elementsP = eP
                 }
             }
-            console.log(target, elementsL)
             if (isObject(c) && 'target' in c) delete c.target
             return [elementsL, elementsP]
         }
