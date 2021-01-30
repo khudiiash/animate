@@ -1,5 +1,5 @@
 function Animate(c) {
-    // version 1.0.9
+    // version 1.1.0
     if (!gsap) return
     let sets;
     let onlyL = Array.from(arguments).some(a => /^(?:LS?|Landscape)$/i.test(a))
@@ -8,9 +8,9 @@ function Animate(c) {
     
     if (arguments.length > 1 && !Array.from(arguments).some(a => Array.isArray(a))) {
         let args = Array.from(arguments)
-        c = getObject(arguments)
+        c = getObject(arguments) || {}
         args.map(a => {
-            if (typeof a === 'string' && !/^(?:l|p|paused|from|to|set)$/i.test(a)) {
+            if (typeof a === 'string' && !/^(?:l|p|paused|from|to|set|call)$/i.test(a)) {
                 if (/\+|\-|\<|\>|\=/.test(a)) c.position = a
                 if (/[a-zA-Z]/.test(a)) c.target = a
             }
@@ -24,7 +24,21 @@ function Animate(c) {
                 c.type = 'to'
                 c.duration = 0
             }
+          	if (isFunction(a)) {
+            	c.type = 'call'
+                c.call = a
+                c.params = args.find(a => Array.isArray(a)) || []
+            }
+        	if (Array.isArray(a) && args.some(f => isFunction(f))) {
+            	c.params = a
+            }
         })
+        if (args.filter(a => isObject(a)).length === 2) {
+        	c.type = 'fromTo'
+            let [f, t] = args.filter(a => isObject(a))
+            c.from = f
+            c.to = t       
+        }
     }
     if (Array.from(arguments).some(a => a instanceof Array)) {
         let tweens = Array.from(arguments).filter(a => a instanceof Array)
@@ -32,26 +46,39 @@ function Animate(c) {
         let dur = Array.from(arguments).find(a => typeof a === 'number')
         let common = getObject(arguments)
         sets = tweens.map(arr => {
-            let tween = arr.find(a => a instanceof Object)
-            if (common) tween = { ...tween, ...common }
-            let duration = arr.includes('set') ? 0 : arr.find(a => typeof a === 'number') || dur
-            let position = arr.find(a => /\+|\-|\<|\>|\=/.test(a)) || pos
-            let target = arr.find(a => typeof a === 'string' && !/^(?:from|to|set)$/i.test(a) && /[a-zA-Z]/.test(a)) || 'all'
-            let type = arr.includes('set') || arr.includes('to') ? 'to' : 'from'
-            let { child, loop, easeInOut, easeIn, easeOut, ease, clip, shadow, perspective } = tween
-            if (child) delete tween.child
-            if (loop) { delete tween.loop; tween.yoyo = true, tween.repeat = loop }
-            if (ease === 'none') tween.ease = Power0.easeNone
-            if (ease) { if (ease === 'none') tween.ease = Power0.easeNone }
-            if (easeIn) { tween.ease = getEase(easeIn) }
-            if (easeOut) { tween.ease = getEase(easeOut) }
-            if (easeInOut) { tween.ease = getEase(easeInOut) }
-            if (perspective) { delete tween.perspective; gsap.set('section', { perspective }) }
-            if (shadow) {tween = generateShadow(shadow, tween)}
-            if (clip) { delete tween.clip; tween = { ...tween, ...generateClipPath(clip) } }
-            return { target, tween, child, duration, position, type }
+          	let from, to;
+            let tween = arr.find(a => isObject(a)) || {};
+            if (common) tween = { ...tween, ...common };
+            let duration = arr.includes('set') ? 0 : arr.find(a => typeof a === 'number') || dur;
+            let position = arr.find(a => typeof a === 'string' && /\+|\-|\<|\>|\=/.test(a)) || pos;
+            let target = arr.find(a => typeof a === 'string' && !/^(?:from|to|set)$/i.test(a) && /[a-zA-Z]/.test(a));
+            let call = arr.find(a => isFunction(a));
+            let params = arr.some(a => isFunction(a)) && arr.some(a => Array.isArray(a)) ? arr.find(a => Array.isArray(a)) :
+            			 arr.some(a => isFunction(a)) && !arr.some(a => Array.isArray(a)) ? [] : null;
+            let type = arr.includes('set') || arr.includes('to') ? 'to' : 'from';
+            let { child, loop, easeInOut, easeIn, easeOut, ease, clip, shadow, perspective } = tween;
+            if (child) delete tween.child;
+            if (loop) { delete tween.loop; tween.yoyo = true, tween.repeat = loop };
+            if (ease === 'none') tween.ease = Power0.easeNone;
+            if (ease) { if (ease === 'none') tween.ease = Power0.easeNone };
+            if (easeIn) { tween.ease = getEase(easeIn) };
+            if (easeOut) { tween.ease = getEase(easeOut) };
+            if (easeInOut) { tween.ease = getEase(easeInOut) };
+            if (perspective) { delete tween.perspective; gsap.set('section', { perspective }) };
+            if (shadow) {tween = generateShadow(shadow, tween)};
+            if (clip) { delete tween.clip; tween = { ...tween, ...generateClipPath(clip) } };
+            if (call) {  type = 'call', tween = null, target = null };
+            if (arr.filter(a => isObject(a)).length === 2) {
+                type = 'fromTo';
+                let [f, t] = arr.filter(a => isObject(a));
+                from = f;
+                to = t;       
+            };
+            return { target, tween, child, duration, position, type, call, params, from, to };
         })
     }
+  	if (arguments.length === 1 && isFunction(c)) {c = {call: c, params: [], position: '', type: 'call'}};
+
     let { duration, position, order, child, loop, easeInOut, easeIn, easeOut, rotateY, rotateX, rotateZ, perspective, ease, clip, shadow, include, exclude, timeline, type } = c || {}
     if (!order && !include) order = 'z-index'
     if (exclude && include) exclude = null
@@ -133,7 +160,7 @@ function Animate(c) {
     }
     if (sets) {
         sets.map(set => {
-            if ('target' in set) {
+            if (set.target) {
                 elementsL = getByTarget(set.target, set.child)[0]
                 elementsP = getByTarget(set.target, set.child)[1]
             }
@@ -143,26 +170,40 @@ function Animate(c) {
                 if (elementsL[0]) elementsL = elementsL.map(e => document.querySelector(`#${e.id} img, #${e.id} span`))
                 if (elementsP[0]) elementsP = elementsP.map(e => document.querySelector(`#${e.id} img, #${e.id} span`))
             }
-
-            if (elementsL[0] && !onlyP && !(set.tween.P && !set.tween.L)) {
-                let tween = set.tween.L ? set.tween.L : set.tween;
-                timelineL[set.type || 'from'](elementsL, { ...tween, duration: set.duration >= 0 ? set.duration : 1 }, set.position)
+			if (set.type === 'call') {
+            	timelineL.call(set.call, set.params, set.position)
             }
-            if (elementsP[0] && !onlyL && !(set.tween.L && !set.tween.P)) {
-                let tween = set.tween.P ? set.tween.P : set.tween;
-                timelineP[set.type || 'from'](elementsP, { ...tween, duration: set.duration >= 0 ? set.duration : 1 }, set.position)
+          	else {
+                 let d = set.duration >= 0 ? set.duration : 1;
+                 let p = set.position ? set.position : '';
+                 ['duration', 'position'].map(k => delete set[k])
+             	 if (elementsL[0] && !onlyP && !(set.tween.P && !set.tween.L)) {
+                    let tween = set.tween.L ? set.tween.L : set.tween;
+                   	if (/fromTo/.test(set.type)) timelineL.fromTo(elementsL, d, set.from, set.to, p)
+					else timelineL[set.type || 'from'](elementsL, d, { ...tween }, p)
+              	 }
+                 if (elementsP[0] && !onlyL && !(set.tween.L && !set.tween.P)) {
+                    let tween = set.tween.P ? set.tween.P : set.tween;
+                    if (/fromTo/.test(set.type)) timelineL.fromTo(elementsL, d, set.from, set.to, p)
+					else timelineL[set.type || 'from'](elementsL, d, { ...tween }, p)
+            	 }
             }
         })
     } else {
-        if ('target' in c) {
+        if (c && c.target) {
             let els = getByTarget(c.target)
             elementsL = els[0]
             elementsP = els[1]
         }
-        if (!onlyP && !(c.P && !c.L)) elementsL.map((e, i) => generateTweens(e, i, timelineL))
-        if (!onlyL && !(!c.P && c.L)) elementsP.map((e, i) => generateTweens(e, i, timelineP))
-    }
 
+      	if (c.call) {
+        	timelineL.call(c.call, c.params, c.position)
+            timelineP.call(c.call, c.params, c.position)
+        } else {
+         	if (!onlyP && !(c.P && !c.L)) elementsL.map((e, i) => generateTweens(e, i, timelineL))
+        	if (!onlyL && !(!c.P && c.L)) elementsP.map((e, i) => generateTweens(e, i, timelineP))
+        }
+    }
     function handleParticulars(e, k, c) {
         if (new RegExp('^' + k).test(e.id)) {
             let o = { ...c }
@@ -187,19 +228,28 @@ function Animate(c) {
         if (!e) return
         let prt = particulars[e.id]
         let g = prt ? {} : c
-        let p = prt && 'position' in prt ? prt.position : position
-        let d = prt && 'duration' in prt ? prt.duration : duration >= 0 ? duration : 1
-        let t = prt && 'type' in prt ? prt.type : type ? type : 'from'
+        let p = prt && prt.position ? prt.position : position
+        let d = prt && prt.duration ? prt.duration : duration >= 0 ? duration : 1
+        let t = prt && prt.type ? prt.type : type ? type : 'from'
         if (rotateY || rotateZ || rotateX) g.z = $(e).width() * 2 * i
-        let ovf = prt && 'child' in prt ? prt.child : child
-        if (prt) delete prt.child
+        let ovf = prt && prt.child ? prt.child : child
+        if (prt) ['duration', 'position','child'].forEach(e => delete prt[e]);
         if (ovf) {
             if (!c.perspective && !(prt && prt.perspective)) gsap.set(e, { overflow: 'hidden' })
             let child = document.querySelector(`#${e.id} img, #${e.id} span`)
+            if (/fromTo/.test(t)) {
+              timeline[t](child, d, g.from, g.to, i > 0 ? p : '')
+            } else {
             timeline[t](child, d, { ...g, ...prt }, i > 0 ? p : '')
+            }
         } else {
+            if (/fromTo/.test(t)) {
+              timeline[t](e, d, g.from, g.to, i > 0 ? p : '')
+            } else {
             timeline[t](e, d, { ...g, ...prt }, i > 0 ? p : '')
+        	}
         }
+       
     }
     function getByTarget(target) {
         if (target) {
@@ -224,9 +274,10 @@ function Animate(c) {
                     let eL = []
                     let eP = []
                     target.map(t => {
-                        let re = new RegExp(`^${t}(?:_1|P|L|LS|Landscape|Portrait)?$`)
-                        eL.push(elementsL.find(e => re.test(e.id)))
-                        eP.push(elementsP.find(e => re.test(e.id)))
+                        let re = new RegExp(`^${t}`)
+                      	const s = (a,b) => parseInt(a.id.replace(/[^0-9]|_1/g, '')) - parseInt(b.id.replace(/[^0-9]|_1/g, ''))
+                        elementsL.filter(e => re.test(e.id)).sort(s).forEach(e => eL.push(e))
+                        elementsP.filter(e => re.test(e.id)).sort(s).forEach(e => eP.push(e))
                     })
                     elementsL = eL
                     elementsP = eP
@@ -269,9 +320,12 @@ function Animate(c) {
     function getObject(ar) {
         return Array.from(ar).find(a => isObject(a))
     }
-    function isObject(a) {
-        return !Array.isArray(a) && typeof a !== 'string' && typeof a !== 'number'
-    }
+   	function isObject(a) {
+    	return typeof a === 'object' && !Array.isArray(a)
+	}
+   function isFunction(a) {
+    	return typeof a === 'function'
+	}
   	function isRequested(e) {
       	let r = false;
       	if (sets && Array.isArray(sets)) {
