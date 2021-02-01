@@ -1,5 +1,5 @@
 function Animate(c) {
-    // version 1.1.0
+    // version 1.1.1
     if (!gsap) return
     let sets;
     let onlyL = Array.from(arguments).some(a => /^(?:LS?|Landscape)$/i.test(a))
@@ -184,8 +184,8 @@ function Animate(c) {
               	 }
                  if (elementsP[0] && !onlyL && !(set.tween.L && !set.tween.P)) {
                     let tween = set.tween.P ? set.tween.P : set.tween;
-                    if (/fromTo/.test(set.type)) timelineL.fromTo(elementsL, d, set.from, set.to, p)
-					else timelineL[set.type || 'from'](elementsL, d, { ...tween }, p)
+                    if (/fromTo/.test(set.type)) timelineP.fromTo(elementsP, d, set.from, set.to, p)
+					else timelineP[set.type || 'from'](elementsP, d, { ...tween }, p)
             	 }
             }
         })
