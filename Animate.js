@@ -1,5 +1,5 @@
 function Animate(c) {
-    // version 1.1.3
+    // version 1.1.4
     if (!gsap) return
     let sets;
     let onlyL = Array.from(arguments).some(a => /^(?:L|LS|Landscape)$/i.test(a))
@@ -406,7 +406,7 @@ function Animate(c) {
            result = 'inset(50% 50% 50% 50%)'
         }
         else {
-           result = `inset(${bottom ? '100%' : '0'} ${left ? '100%' : '0'} ${top ? '100%' : '0'} ${right ? '100%' : '0'})`
+           result = `inset(${bottom ? '100%' : '0%'} ${left ? '100%' : '0%'} ${top ? '100%' : '0%'} ${right ? '100%' : '0%'})`
         }
       	tween.webkitClipPath = result
         tween.clipPath = result
