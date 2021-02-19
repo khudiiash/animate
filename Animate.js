@@ -1,5 +1,5 @@
 function Animate(c) {
-    // version 1.1.2
+    // version 1.1.3
     if (!gsap) return
     let sets;
     let onlyL = Array.from(arguments).some(a => /^(?:L|LS|Landscape)$/i.test(a))
@@ -71,6 +71,7 @@ function Animate(c) {
             if (call) {  type = 'call', tween = null, target = null }
           	if (arr.some(a => isHTML(a))) target = arr.find(a => isHTML(a))
             if (arr.some(a => a instanceof jQuery)) target = arr.find(a => a instanceof jQuery)
+            if (tween == null) tween = {}
             if (arr.filter(a => isObject(a)).length === 2 || tween.type === 'fromTo') {
                 type = 'fromTo'
                 if ('from' in tween) {
