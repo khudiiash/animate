@@ -1,5 +1,5 @@
 function Animate(c) {
-    // version 1.1.4
+    // version 1.1.5
     if (!gsap) return
     let sets;
     let onlyL = Array.from(arguments).some(a => /^(?:L|LS|Landscape)$/i.test(a))
@@ -272,6 +272,7 @@ function Animate(c) {
     }
   	function removeParticulars(tween, particulars) {
     	  Object.keys(tween).forEach(k => {
+            if (/^(?:x|y|z)$/.test(k)) return
          	if (Object.keys(particulars).some(p => new RegExp(`^${k}`).test(p)))
               delete tween[k]
          })
@@ -514,7 +515,7 @@ function Animate(c) {
   	function isRequested(e) {
       	let r = false
       	if (sets && Array.isArray(sets)) {
-        	r = sets.some(s => new RegExp('^' + s.target).test(e.id))
+        	r = sets.some(s => new RegExp(e.id).test(s.target))
         } 
       	if (c && isObject(c)){
           	r = Object.keys(c).some(i => i && new RegExp('^' + i).test(e.id))
